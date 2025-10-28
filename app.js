@@ -1,5 +1,6 @@
 // Import Express.js
 const express = require('express');
+require('dotenv').config();
 
 // Create an Express app
 const app = express();
@@ -8,7 +9,7 @@ const app = express();
 app.use(express.json());
 
 // Set port and verify_token
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 const verifyToken = process.env.VERIFY_TOKEN;
 
 // Route for GET requests
