@@ -1,38 +1,20 @@
-// Import Express.js
-const express = require('express');
 require('dotenv').config();
 
-// Create an Express app
-const app = express();
+const CloudAPI = require('./services/CloudAPI');
 
-// Middleware to parse JSON bodies
-app.use(express.json());
+const MY_TOKEN = process.env.WHATSAPP_TOKEN;
+const MY_PHONE_ID = process.env.MY_PHONE_ID;
 
-// Set port and verify_token
-const port = process.env.PORT;
-const verifyToken = process.env.VERIFY_TOKEN;
+const api = new CloudAPI(MY_TOKEN, MY_PHONE_ID)
 
-// Route for GET requests
-app.get('/', (req, res) => {
-  const { 'hub.mode': mode, 'hub.challenge': challenge, 'hub.verify_token': token } = req.query;
+async function main() {
+    try {
+        const resposta = await api.enviarTexto('5511970743843', 'Olá mundo!');
+        console.log('✅ Mensagem enviada com sucesso!');
+        console.log('Retorno da API:', resposta);
+    } catch (erro) {
+        console.error('❌ Erro ao enviar mensagem:', erro.message);
+    }
+}
 
-  if (mode === 'subscribe' && token === verifyToken) {
-    console.log('WEBHOOK VERIFIED');
-    res.status(200).send(challenge);
-  } else {
-    res.status(403).end();
-  }
-});
-
-// Route for POST requests
-app.post('/', (req, res) => {
-  const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
-  console.log(`\n\nWebhook received ${timestamp}\n`);
-  console.log(JSON.stringify(req.body, null, 2));
-  res.status(200).end();
-});
-
-// Start the server
-app.listen(port, () => {
-  console.log(`\nListening on port ${port}\n`);
-});
+main();
